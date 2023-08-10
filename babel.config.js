@@ -5,6 +5,12 @@ module.exports = function (api) {
     plugins: [
       // Required for expo-router
       'expo-router/babel',
+      'nativewind/babel',
     ],
+    env: {
+      production: {
+        plugins: ['react-native-paper/babel']
+      }
+    }
   };
 };
