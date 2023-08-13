@@ -1,32 +1,31 @@
-import { StyleSheet, Text, View } from "react-native";
 import React, { useState } from "react";
+import { StyleSheet, View } from "react-native";
+import axios from "axios";
+import { Formik } from "formik";
 import {
   Button,
   TextInput,
   TextInputProps,
   useTheme,
+  Text,
 } from "react-native-paper";
-import { Controller, useForm } from "react-hook-form";
-
+import { useRouter } from "expo-router";
 
 export default function RegisterForm() {
-  const {
-    handleSubmit,
-    control,
-    watch,
-    formState: { errors },
-  } = useForm({
-    defaultValues: {
-      name: "",
-      email: "",
-      phone: "",
-      password: "",
-      passwordConfirm: ""
-    },
-  });
+  const router = useRouter();
 
-  console.log(watch())
-  
+  const handleSubmit = (values: Object) => {
+    axios
+      .post("https://6j2m3t-6000.csb.app/api/auth/register", values)
+      .then((res) => {
+        console.log(res.data);
+        alert(res.data[0]);
+        router.push("/home");
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
 
   return (
     <View className="flex items-center gap-5">
@@ -34,98 +33,63 @@ export default function RegisterForm() {
         <Text className="text-3xl font-medium text-yellow-400">
           Let's Get Started !
         </Text>
-        <Text className="text-sm text-slate-400">
+        <Text
+          className="text-sm text-slate-400"
+          style={{ fontFamily: "AirBnB" }}
+        >
           Create new account to access all features
         </Text>
       </View>
-      <View className="max-w-xs space-y-10">
-        <Controller
-          name="name"
-          control={control}
-          rules={{ required: true }}
-          render={({ field: { onChange, value, onBlur } }) => (
+      <Formik
+        initialValues={{ name: "", email: "", phone: "", password: "" }}
+        onSubmit={handleSubmit}
+      >
+        {({ handleChange, handleBlur, submitForm, values }) => (
+          <View className="max-w-xs ml-5 space-y-3 mt-5">
             <CustomTextInput
               label="Name"
-              onChangeText={onChange}
               placeholder="Enter your name"
+              onChangeText={handleChange("name")}
+              onBlur={handleBlur("name")}
+              value={values.name}
               icon="account-outline"
-              className="min-w-full mb-3"
-              onBlur={onBlur}
-              value={value}
+              className="min-w-full"
             />
-          )}
-        />
-        <Controller
-          name="email"
-          control={control}
-          rules={{ required: true }}
-          render={({ field: { onChange, value, onBlur } }) => (
             <CustomTextInput
               label="E-Mail"
               placeholder="Enter your email"
               icon="email-outline"
-              className="min-w-full mb-3"
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
+              className="min-w-full"
+              onChangeText={handleChange("email")}
+              onBlur={handleBlur("email")}
+              value={values.email}
             />
-          )}
-        />
-        <Controller
-          name="phone"
-          control={control}
-          rules={{ required: true }}
-          render={({ field: { onChange, value, onBlur } }) => (
             <CustomTextInput
               label="Phone"
               placeholder="Enter your phone"
               icon="phone-outline"
-              className="min-w-full mb-3"
-              onChangeText={onChange}
-              onBlur={onBlur}
-              value={value}
+              className="min-w-full"
+              onChangeText={handleChange("phone")}
+              onBlur={handleBlur("phone")}
+              value={values.phone}
             />
-          )}
-        />
-        <Controller
-          name="password"
-          control={control}
-          rules={{ required: true }}
-          render={({ field: { onChange, value, onBlur } }) => (
             <CustomTextInput
               label="Password"
-              onChangeText={onChange}
-              onBlur={onBlur}
-              value={value}
               placeholder="Enter your password"
-              icon="lock-outline"
-              className="min-w-full mb-3"
-              secureTextEntry={true}
-            />
-          )}
-        />
-
-        <Controller
-          name="passwordConfirm"
-          control={control}
-          rules={{ required: true }}
-          render={({ field: { onChange, value, onBlur } }) => (
-            <CustomTextInput
-              label="Password Confirm"
-              onChangeText={onChange}
-              onBlur={onBlur}
-              value={value}
-              placeholder="Confirm your password"
               icon="lock-outline"
               className="min-w-full"
               secureTextEntry={true}
+              onChangeText={handleChange("password")}
+              onBlur={handleBlur("password")}
+              value={values.password}
             />
-          )}
-        />
-        <Button mode="contained">
-          Sign Up
-        </Button>
-      </View>
+            <Button mode="contained" onPress={submitForm}>
+              Sign Up
+            </Button>
+          </View>
+        )}
+      </Formik>
+      <Text>Already have account?</Text>
     </View>
   );
 }

@@ -1,25 +1,18 @@
-import { StyleSheet, Text, View } from "react-native";
-import React from "react";
-import { Button, Card, Modal, Portal } from "react-native-paper";
-import { SafeAreaView } from "react-native-safe-area-context";
-import RegisterForm from "@/components/Form/RegisterForm";
+import { useAuth } from "@/components/context/AuthContext";
+import { Pressable, Text, View } from "react-native";
 
-export default function LoginPage() {
-  const [visible, setVisible] = React.useState(false);
-
-  const showModal = () => setVisible(true);
-  const hideModal = () => setVisible(false);
-  const containerStyle = { backgroundColor: "white", padding: 20 };
-  
+export default function SignIn() {
+  const { signOut, user } = useAuth();
+  const handleSignOut = async () => {
+    await signOut();
+  };
   return (
-    <SafeAreaView>
-      <View className="flex justify-center items-center min-h-full">
-        <RegisterForm />
-      </View>
-    </SafeAreaView>
+    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <Pressable onPress={handleSignOut}>
+        <Text>Logout</Text>
+      </Pressable>
+
+      {/* <Text>{JSON.stringify(user)}</Text> */}
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-    
-});
