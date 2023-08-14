@@ -47,7 +47,6 @@ const RootLayoutNav = () => {
       }}
     >
       <Stack.Screen name="index" />
-      <Stack.Screen name="register" options={{ headerShown: true }} />
       <Stack.Screen name="(home)" />
     </Stack>
   );

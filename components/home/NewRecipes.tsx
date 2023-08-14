@@ -1,10 +1,15 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+import React from "react";
+import { View } from "react-native";
+import { Text } from "react-native-paper";
+import CarouselCard from "@/components/Carousel/CarouselCard";
 
 export default function NewRecipes() {
   return (
-    <View>
-      <Text>NewRecipes</Text>
+    <View className="p-5 -mt-3">
+      <Text variant="headlineSmall" style={{ fontWeight: "bold" }}>
+        New Recipes
+      </Text>
+      <CarouselCard />
     </View>
-  )
+  );
 }

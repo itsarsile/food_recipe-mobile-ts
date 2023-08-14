@@ -1,18 +1,13 @@
 import { useAuth } from "@/components/context/AuthContext";
+import * as SecureStorage from "expo-secure-store";
+import React from "react";
 import { Pressable, Text, View } from "react-native";
+import { Button } from "react-native-paper";
 
 export default function SignIn() {
-  const { signOut, user } = useAuth();
-  const handleSignOut = async () => {
-    await signOut();
-  };
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Pressable onPress={handleSignOut}>
-        <Text>Logout</Text>
-      </Pressable>
-
-      {/* <Text>{JSON.stringify(user)}</Text> */}
-    </View>
+    <View
+      style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+    ></View>
   );
 }

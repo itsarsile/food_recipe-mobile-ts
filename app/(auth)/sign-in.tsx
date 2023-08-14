@@ -1,17 +1,21 @@
-import { StyleSheet, Text, View } from "react-native";
-import React from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Avatar, Button, useTheme } from "react-native-paper";
 import { CustomTextInput } from "@/components/Themed";
-import { Link } from "expo-router";
 import { useAuth } from "@/components/context/AuthContext";
+import { Link } from "expo-router";
 import { Formik } from "formik";
+import React from "react";
+import { StyleSheet, Text, View } from "react-native";
+import { Avatar, Button, useTheme } from "react-native-paper";
 
+interface FormValues {
+  email: string;
+  password: string;
+}
 export default function LoginPage() {
+  //@ts-ignore
   const { signIn } = useAuth();
   const theme = useTheme();
 
-  const handleSubmit = async (values) => {
+  const handleSubmit = async (values: FormValues) => {
     try {
       await signIn(values.email, values.password);
     } catch (error) {

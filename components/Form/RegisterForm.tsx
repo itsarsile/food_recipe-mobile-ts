@@ -16,7 +16,7 @@ export default function RegisterForm() {
 
   const handleSubmit = (values: Object) => {
     axios
-      .post("https://6j2m3t-6000.csb.app/api/auth/register", values)
+      .post(`${process.env.EXPO_PUBLIC_API_URL}/auth/register`, values)
       .then((res) => {
         console.log(res.data);
         alert(res.data[0]);
