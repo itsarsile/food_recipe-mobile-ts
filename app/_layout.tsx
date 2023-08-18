@@ -4,6 +4,8 @@ import { Slot, SplashScreen, Stack } from "expo-router";
 import { useFonts } from "expo-font";
 import { MD3LightTheme, PaperProvider } from "react-native-paper";
 import { AuthProvider } from "../components/context/AuthContext";
+import { Provider } from "react-redux";
+import { store } from "@/src/store";
 
 const theme = {
   ...MD3LightTheme,
@@ -29,11 +31,13 @@ const Root = () => {
   if (!fontsLoaded) return null;
 
   return (
-    <AuthProvider>
-      <PaperProvider theme={theme}>
-        <RootLayoutNav />
-      </PaperProvider>
-    </AuthProvider>
+    <Provider store={store}>
+      <AuthProvider>
+        <PaperProvider theme={theme}>
+          <RootLayoutNav />
+        </PaperProvider>
+      </AuthProvider>
+    </Provider>
   );
 };
 
@@ -46,8 +50,9 @@ const RootLayoutNav = () => {
         headerShown: false,
       }}
     >
-      <Stack.Screen name="index" />
+      <Stack.Screen name="(auth)" />
       <Stack.Screen name="(home)" />
+      <Stack.Screen name="index" />
     </Stack>
   );
 };

@@ -1,19 +1,19 @@
-import { StyleSheet, Text, View } from "react-native";
-import React from "react";
-import { Stack, Tabs } from "expo-router";
+import { selectCurrentUser } from "@/src/features/auth/authSlice";
 import { Feather, Ionicons } from "@expo/vector-icons";
+import { Link, Tabs, router, useRouter } from "expo-router";
+import React from "react";
+import { TouchableOpacity } from "react-native";
+import { StyleSheet } from "react-native";
 import { useTheme } from "react-native-paper";
-import { useAuth } from "@/components/context/AuthContext";
+import { useSelector } from "react-redux";
 
 export default function _layout() {
   //@ts-ignore
-  const { user } = useAuth();
-  console.log(user);
   const theme = useTheme();
   return (
     <Tabs>
       <Tabs.Screen
-        name="home"
+        name="index"
         options={{
           headerShown: false,
           tabBarLabel: "Home",
@@ -54,6 +54,23 @@ export default function _layout() {
             <Feather name="user" size={24} color={color} />
           ),
           tabBarActiveTintColor: theme.colors.primary,
+        }}
+      />
+      <Tabs.Screen
+        name="recipe/[recipeId]"
+        options={{
+          headerTitle: "",
+          headerTransparent: true,
+          headerLeft: (props) => {
+            return (
+              <TouchableOpacity>
+                <Link href="../">
+                  <Feather name="chevron-left" size={28} color="white" />
+                </Link>
+              </TouchableOpacity>
+            );
+          },
+          href: null,
         }}
       />
     </Tabs>
