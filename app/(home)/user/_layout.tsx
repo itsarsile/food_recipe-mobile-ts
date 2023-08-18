@@ -7,7 +7,7 @@ export default function _layout() {
   const theme = useTheme();
   return (
     <Stack>
-      <Stack.Screen name="[id]" options={{ headerShown: false }} />
+      <Stack.Screen name="user" options={{ headerShown: false }} />
       <Stack.Screen
         name="edit"
         options={{

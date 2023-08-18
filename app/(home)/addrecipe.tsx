@@ -1,27 +1,36 @@
-import { View, Text } from "react-native";
-import React, { useEffect, useState } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Button, useTheme } from "react-native-paper";
 import { CustomTextInput } from "@/components/Themed";
-import { Formik } from "formik";
-import * as SecureStorage from "expo-secure-store";
 import { useAuth } from "@/components/context/AuthContext";
+import { selectCurrentUser } from "@/src/features/auth/authSlice";
+import { useCreateMutation } from "@/src/features/recipes/recipesApiSlice";
 import axios from "axios";
 import { useRouter } from "expo-router";
+import { Formik } from "formik";
+import React from "react";
+import { Text, View } from "react-native";
+import { Button, useTheme } from "react-native-paper";
+import { useSelector } from "react-redux";
 
 const AddRecipe = () => {
-  const router = useRouter();
-  const { user } = useAuth();
+  const [create] = useCreateMutation();
+  // @ts-ignore
+  const user = useSelector(selectCurrentUser);
+  console.log("🚀 ~ file: addrecipe.tsx:17 ~ AddRecipe ~ user:", user);
+  //@ts-ignore
   const theme = useTheme();
   const handleSubmit = async (values: any) => {
     try {
-      await axios
-        .post(`${process.env.EXPO_PUBLIC_API_URL}/recipes`, values)
-        .then((res) => {
-          alert(res.status);
-          router.push("/home");
-        })
-        .catch((err) => alert(err));
+      // await axios
+      //   .post(`${process.env.EXPO_PUBLIC_API_URL}recipes`, values)
+      //   .then((res) => {
+      //     alert(res.status);
+      //     router.push("/home");
+      //   })
+      //   .catch((err) => alert(err));
+      const response = await create(values);
+      console.log(
+        "🚀 ~ file: addrecipe.tsx:29 ~ handleSubmit ~ response:",
+        response
+      );
     } catch (error) {}
   };
   return (
@@ -37,7 +46,6 @@ const AddRecipe = () => {
       </Text>
       <Formik
         initialValues={{
-          userId: user.user.id,
           title: "",
           description: "",
           photo: "",

@@ -1,12 +1,9 @@
-import {
-  router,
-  useRootNavigationState,
-  useRouter,
-  useSegments,
-} from "expo-router";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import { useLoginMutation } from "@/src/features/auth/authApiSlice";
+import { logOut, setCredentials } from "@/src/features/auth/authSlice";
+import { useRootNavigationState, useRouter, useSegments } from "expo-router";
 import * as SecureStorage from "expo-secure-store";
-import axios from "axios";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 
 interface UserTypes {
   id: number;
@@ -17,19 +14,18 @@ interface UserTypes {
 }
 
 interface User {
-  token: string;
-  refreshToken: string;
-  user: UserTypes;
+  accessToken: string | null;
+  refreshToken: string | null;
+  user: UserTypes | null;
 }
 
 interface AuthContextType {
-  signIn: (email: string, password: string) => void;
-  signOut: () => void;
-  refreshAccessToken: () => Promise<void>;
-  user: User | null;
+  signIn?: (email: string, password: string) => void;
+  signOut?: () => Promise<any>;
+  user?: User | null;
 }
 
-const AuthContext = createContext<AuthContextType | null>(null);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function useAuth() {
   return useContext(AuthContext);
@@ -47,7 +43,7 @@ function usePortectedRoute(user: User | null) {
     const inAuthGroup = segments[0] === "(auth)";
 
     if (!user && !inAuthGroup) {
-      router.replace("/sign-in");
+      router.push("/(auth)/");
     } else if (user && inAuthGroup) {
       router.replace("/home");
     }
@@ -55,23 +51,27 @@ function usePortectedRoute(user: User | null) {
 }
 
 export function AuthProvider(props: React.PropsWithChildren<{}>) {
-  const [user, setAuth] = useState<User | null>(null);
   const router = useRouter();
+  const [login] = useLoginMutation();
+  const dispatch = useDispatch();
+
+  const [user, setAuth] = useState<User | null>(null);
 
   useEffect(() => {
     const checkAuthentication = async () => {
       try {
         const userData = await SecureStorage.getItemAsync("userData");
+        console.log(
+          "🚀 ~ file: AuthContext.tsx:70 ~ checkAuthentication ~ userData:",
+          userData
+        );
         if (userData) {
-          const { token, refreshToken, user } = JSON.parse(userData);
-          setAuth({ token, user, refreshToken });
-
-          if (await verifySession(token)) {
-            router.replace("/home");
-          } else {
-            refreshAccessToken();
-            signOut();
-          }
+          const { user, accessToken, refreshToken } = JSON.parse(userData);
+          setAuth({ accessToken, refreshToken, user });
+          router.replace("/home");
+        } else {
+          signOut();
+          router.replace("/sign-in");
         }
       } catch (error) {
         console.error("Error checking authentication:", error);
@@ -83,53 +83,17 @@ export function AuthProvider(props: React.PropsWithChildren<{}>) {
 
   usePortectedRoute(user);
 
-  const refreshAccessToken = async () => {
-    try {
-      const storedUserData = await SecureStorage.getItemAsync("userData");
-      if (storedUserData) {
-        const { refreshToken } = JSON.parse(storedUserData);
-        const response = await axios.get(
-          `${process.env.EXPO_PUBLIC_API_URL}/auth/refresh`,
-          {
-            headers: {
-              Authorization: `Bearer ${refreshToken}`,
-            },
-          }
-        );
-        const newAccessToken = response.data.accessToken;
-        console.info("New Acces Token", newAccessToken);
-
-        setAuth((prevState) => ({
-          ...prevState!,
-          token: newAccessToken,
-        }));
-        const updatedUserData = JSON.stringify({
-          ...JSON.parse(storedUserData),
-          token: newAccessToken,
-        });
-        await SecureStorage.setItemAsync("userData", updatedUserData);
-      }
-    } catch (error) {
-      console.error("Error refreshing access token:", error);
-    }
-  };
-
   const signIn = async (email: string, password: string) => {
     try {
-      const response = await axios.post(
-        `${process.env.EXPO_PUBLIC_API_URL}auth/login`,
-        { email, password }
+      const response = await login({ email, password }).unwrap();
+      const { refreshToken, accessToken, user } = response;
+      console.log(
+        "🚀 ~ file: AuthContext.tsx:73 ~ signIn ~ response:",
+        response
       );
-      console.log(process.env.EXPO_PUBLIC_API_URL);
-      console.log(response.data);
-      const { accessToken, refreshToken, user } = response.data;
-      console.log(accessToken);
-      setAuth((prevState) => ({
-        ...prevState,
-        token: accessToken,
-        refreshToken: refreshToken,
-        user,
-      }));
+      dispatch(setCredentials({ ...response, user }));
+
+      setAuth({ user, accessToken, refreshToken });
 
       const userData = JSON.stringify({ token: accessToken, user });
       await SecureStorage.setItemAsync("userData", userData);
@@ -141,32 +105,12 @@ export function AuthProvider(props: React.PropsWithChildren<{}>) {
   const signOut = async () => {
     try {
       // Remove the token from AsyncStorage
-      await SecureStorage.deleteItemAsync("userData");
-
-      // Clear the user's authentication status
+      //@ts-ignore
+      dispatch(logOut());
       setAuth(null);
+      await SecureStorage.deleteItemAsync("userData");
     } catch (error) {
       console.error("Error signing out:", error);
-    }
-  };
-
-  const verifySession = async (token: string) => {
-    try {
-      const response = await axios.get(
-        `${process.env.EXPO_PUBLIC_API_URL}/users/me`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      if (response.status === 500) {
-        return false;
-      }
-      return true;
-    } catch (error) {
-      await refreshAccessToken();
-      return false;
     }
   };
 
@@ -176,7 +120,6 @@ export function AuthProvider(props: React.PropsWithChildren<{}>) {
         signIn,
         signOut,
         user,
-        refreshAccessToken,
       }}
     >
       {props.children}

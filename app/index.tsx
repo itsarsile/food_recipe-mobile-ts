@@ -1,13 +1,12 @@
-import { useAuth } from "@/components/context/AuthContext";
-import * as SecureStorage from "expo-secure-store";
+import { StyleSheet, Text, View } from "react-native";
 import React from "react";
-import { Pressable, Text, View } from "react-native";
-import { Button } from "react-native-paper";
 
-export default function SignIn() {
+export default function index() {
   return (
-    <View
-      style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-    ></View>
+    <View>
+      <Text>index</Text>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({});

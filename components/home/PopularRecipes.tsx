@@ -9,7 +9,6 @@ export default function PopularRecipes() {
       <Text variant="headlineSmall" style={{ fontWeight: "bold" }}>
         Popular Recipes
       </Text>
-      <CarouselCard withDescription={true} />
     </View>
   );
 }

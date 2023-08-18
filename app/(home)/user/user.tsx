@@ -1,17 +1,23 @@
 import { useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Avatar, Divider, List, useTheme } from "react-native-paper";
 import { router } from "expo-router";
+import { SimpleLineIcons } from "@expo/vector-icons";
+import { useAuth } from "@/components/context/AuthContext";
 const User = () => {
-  const { slug } = useLocalSearchParams();
-  const [user, setUser] = useState();
-
+  //@ts-ignore
+  const { signOut } = useAuth();
   const theme = useTheme();
-
+  const handleLogout = async () => {
+    await signOut();
+  };
   return (
     <View className="min-h-screen">
-      <View className="w-full h-1/2" style={styles.userContainer}>
+      <View className="w-full h-1/2 relative" style={styles.userContainer}>
+        <Pressable className="absolute right-5 top-10" onPress={handleLogout}>
+          <SimpleLineIcons name="logout" size={24} color="white" />
+        </Pressable>
         <View className="items-center space-y-3 justify-center mt-36">
           <Avatar.Image
             source={require("@/assets/images/avatar_default.png")}
