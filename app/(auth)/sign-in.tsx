@@ -1,7 +1,7 @@
 import { CustomTextInput } from "@/components/Themed";
 import { useAuth } from "@/components/context/AuthContext";
 import { useLoginMutation } from "@/src/features/auth/authApiSlice";
-import { Link, useRouter } from "expo-router";
+import { Link, Stack, Tabs, useRouter } from "expo-router";
 import { Formik } from "formik";
 import React, { useState } from "react";
 import {
@@ -34,38 +34,42 @@ export default function LoginPage() {
     }
   };
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-    >
-      <View className="items-center justify-center min-h-screen">
-        <Avatar.Image
-          source={require("@/assets/images/avatar_default.png")}
-          size={180}
-        />
-        <Text
-          style={{
-            color: theme.colors.primary,
-            fontWeight: "500",
-            fontSize: 18,
-            marginTop: 20,
-          }}
-        >
-          Welcome!
-        </Text>
-        <Text
-          style={{
-            color: theme.colors.secondary,
-          }}
-        >
-          Log in to your existing account
-        </Text>
-        <Formik
-          initialValues={{ email: "", password: "" }}
-          onSubmit={handleSubmit}
-        >
-          {({ handleChange, handleBlur, submitForm, values }) => (
-            <View className="max-w-xs mt-10">
+    <View className="items-center justify-center min-h-screen">
+      <Stack.Screen
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Avatar.Image
+        source={require("@/assets/images/avatar_default.png")}
+        size={180}
+      />
+      <Text
+        style={{
+          color: theme.colors.primary,
+          fontWeight: "500",
+          fontSize: 18,
+          marginTop: 20,
+        }}
+      >
+        Welcome!
+      </Text>
+      <Text
+        style={{
+          color: theme.colors.secondary,
+        }}
+      >
+        Log in to your existing account
+      </Text>
+      <Formik
+        initialValues={{ email: "", password: "" }}
+        onSubmit={handleSubmit}
+      >
+        {({ handleChange, handleBlur, submitForm, values }) => (
+          <View className="max-w-xs mt-10">
+            <KeyboardAvoidingView
+              behavior={Platform.OS === "ios" ? "padding" : "height"}
+            >
               <CustomTextInput
                 label="Email"
                 mode="outlined"
@@ -111,11 +115,11 @@ export default function LoginPage() {
                   </Link>
                 </Text>
               </View>
-            </View>
-          )}
-        </Formik>
-      </View>
-    </KeyboardAvoidingView>
+            </KeyboardAvoidingView>
+          </View>
+        )}
+      </Formik>
+    </View>
   );
 }
 

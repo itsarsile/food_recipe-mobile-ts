@@ -43,7 +43,7 @@ function usePortectedRoute(user: User | null) {
     const inAuthGroup = segments[0] === "(auth)";
 
     if (!user && !inAuthGroup) {
-      router.push("/(auth)/");
+      router.replace("/sign-in");
     } else if (user && inAuthGroup) {
       router.replace("/home");
     }
@@ -61,10 +61,6 @@ export function AuthProvider(props: React.PropsWithChildren<{}>) {
     const checkAuthentication = async () => {
       try {
         const userData = await SecureStorage.getItemAsync("userData");
-        console.log(
-          "🚀 ~ file: AuthContext.tsx:70 ~ checkAuthentication ~ userData:",
-          userData
-        );
         if (userData) {
           const { user, accessToken, refreshToken } = JSON.parse(userData);
           setAuth({ accessToken, refreshToken, user });

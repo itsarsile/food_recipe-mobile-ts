@@ -1,13 +1,14 @@
 import { View, Text } from "react-native";
 import React, { useCallback } from "react";
-import { Slot, SplashScreen, Stack } from "expo-router";
+import { Slot, SplashScreen, Stack, Tabs } from "expo-router";
 import { useFonts } from "expo-font";
-import { MD3LightTheme, PaperProvider } from "react-native-paper";
+import { MD3LightTheme, PaperProvider, useTheme } from "react-native-paper";
 import { AuthProvider } from "../components/context/AuthContext";
 import { Provider } from "react-redux";
 import { store } from "@/src/store";
+import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 
-const theme = {
+const themes = {
   ...MD3LightTheme,
   colors: {
     ...MD3LightTheme.colors,
@@ -18,6 +19,7 @@ const theme = {
 };
 
 const Root = () => {
+  const theme = useTheme();
   const [fontsLoaded] = useFonts({
     AirBnB: require("@/assets/fonts/AirbnbCereal_W_Bk.otf"),
   });
@@ -33,8 +35,8 @@ const Root = () => {
   return (
     <Provider store={store}>
       <AuthProvider>
-        <PaperProvider theme={theme}>
-          <RootLayoutNav />
+        <PaperProvider theme={themes}>
+          <Slot />
         </PaperProvider>
       </AuthProvider>
     </Provider>
@@ -42,17 +44,3 @@ const Root = () => {
 };
 
 export default Root;
-
-const RootLayoutNav = () => {
-  return (
-    <Stack
-      screenOptions={{
-        headerShown: false,
-      }}
-    >
-      <Stack.Screen name="(auth)" />
-      <Stack.Screen name="(home)" />
-      <Stack.Screen name="index" />
-    </Stack>
-  );
-};

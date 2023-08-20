@@ -14,6 +14,4 @@ export default function LoginPage() {
   );
 }
 
-const styles = StyleSheet.create({
-    
-});
+const styles = StyleSheet.create({});

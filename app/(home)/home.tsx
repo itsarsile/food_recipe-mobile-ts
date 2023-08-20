@@ -2,20 +2,14 @@ import { CustomTextInput } from "@/components/Themed";
 import { useAuth } from "@/components/context/AuthContext";
 import PopularForYou from "@/components/home/PopularForYou";
 import { useGetRecipesQuery } from "@/src/features/recipes/recipesApiSlice";
-import { Link } from "expo-router";
+import { Link, Stack } from "expo-router";
 import React from "react";
 import ContentLoader, { Rect } from "react-content-loader/native";
 import { Image, ScrollView, StyleSheet, View } from "react-native";
-import { Button, Text } from "react-native-paper";
+import { Button, Text, useTheme } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 export default function Home() {
   //@ts-ignore
-  // const { data, error, isLoading } = useGetRecipesQuery();
-  const { signOut, status } = useAuth();
-  console.log(status);
-  const handleLogout = async () => {
-    await signOut();
-  };
   return (
     <SafeAreaView>
       <ScrollView>
@@ -51,10 +45,6 @@ export default function Home() {
               <CarouselCard withDescription={true} />
             </View>
           </View>
-
-          <Button onPress={handleLogout} mode="contained">
-            Logout
-          </Button>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -70,7 +60,7 @@ interface Recipe {
 }
 
 function CarouselCard({ withDescription }: any) {
-  const { data, isLoading } = useGetRecipesQuery();
+  const { data, isLoading, refetch } = useGetRecipesQuery();
 
   if (isLoading)
     return (
@@ -106,10 +96,11 @@ function CarouselCard({ withDescription }: any) {
 }
 
 const Card = ({ item, withDescription, recipeId }: any) => {
+  const theme = useTheme();
   return (
     <Link
       href={{
-        pathname: "/(home)/recipe/[recipeId]",
+        pathname: "/recipe/[recipeId]",
         params: { recipeId: recipeId },
       }}
       className="mr-5"
@@ -118,12 +109,24 @@ const Card = ({ item, withDescription, recipeId }: any) => {
         <Image style={styles.image} source={{ uri: item.photo }} />
         {withDescription ? (
           <View className="absolute bottom-0 p-5 bg-white w-[260px] overflow-hidden">
-            <Text className="text-black font-bold text-xl">{item.title}</Text>
-            {withDescription && <Text>{item.description}</Text>}
+            <Text className="text-black font-bold text-xl">
+              {item.title.slice(0, 20)}...
+            </Text>
+            {withDescription && (
+              <Text>
+                {item.description.slice(0, 30)}{" "}
+                <Text
+                  className="italic font-bold"
+                  style={{ color: theme.colors.primary }}
+                >
+                  See more...
+                </Text>
+              </Text>
+            )}
           </View>
         ) : (
           <View className="absolute bottom-0 p-5">
-            <Text style={styles.title}>{item.title}</Text>
+            <Text style={styles.title}>{item.title.slice(0, 20)}...</Text>
           </View>
         )}
       </View>
@@ -162,27 +165,3 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
 });
-
-const recipeData = [
-  {
-    id: 1,
-    title: "Nasi Goreng Pete",
-    description: "Nasi Goreng Enak",
-    photo:
-      "https://th.bing.com/th/id/OIP.nvkWnkA4hufuyndkO3GQVAHaE7?pid=ImgDet&rs=1",
-  },
-  {
-    id: 2,
-    title: "Nasi Goreng Pete",
-    description: "Nasi Goreng Enak",
-    photo:
-      "https://th.bing.com/th/id/OIP.nvkWnkA4hufuyndkO3GQVAHaE7?pid=ImgDet&rs=1",
-  },
-  {
-    id: 3,
-    title: "Nasi Goreng Pete",
-    description: "Nasi Goreng Enak",
-    photo:
-      "https://th.bing.com/th/id/OIP.nvkWnkA4hufuyndkO3GQVAHaE7?pid=ImgDet&rs=1",
-  },
-];

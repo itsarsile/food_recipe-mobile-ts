@@ -6,8 +6,8 @@ import { useTheme } from "react-native-paper";
 export default function _layout() {
   const theme = useTheme();
   return (
-    <Stack>
-      <Stack.Screen name="user" options={{ headerShown: false }} />
+    <Stack screenOptions={{ headerShown: true }}>
+      <Stack.Screen name="[userId]" options={{ headerShown: false }} />
       <Stack.Screen
         name="edit"
         options={{
@@ -47,6 +47,7 @@ export default function _layout() {
             fontWeight: "800",
             color: theme.colors.primary,
           },
+
           headerTitleAlign: "center",
         }}
       />
@@ -65,6 +66,7 @@ export default function _layout() {
         }}
       />
     </Stack>
+    // <Stack />
   );
 }
 

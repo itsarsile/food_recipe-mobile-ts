@@ -5,9 +5,14 @@ import { Avatar, Divider, List, useTheme } from "react-native-paper";
 import { router } from "expo-router";
 import { SimpleLineIcons } from "@expo/vector-icons";
 import { useAuth } from "@/components/context/AuthContext";
+import { useSelector } from "react-redux";
+import { selectCurrentUser } from "@/src/features/auth/authSlice";
 const User = () => {
   //@ts-ignore
   const { signOut } = useAuth();
+  const user = useSelector(selectCurrentUser);
+  // if (!user) return <Text>User unavailable</Text>;
+  console.log("🚀 ~ file: [userId].tsx:14 ~ User ~ user:", user);
   const theme = useTheme();
   const handleLogout = async () => {
     await signOut();
@@ -23,7 +28,7 @@ const User = () => {
             source={require("@/assets/images/avatar_default.png")}
             size={100}
           />
-          <Text className="font-bold text-lg text-white">Felix Kjelberg</Text>
+          <Text className="font-bold text-lg text-white">{user?.name}</Text>
         </View>
       </View>
       <View className="bg-white w-full" style={styles.menuContainer}>
