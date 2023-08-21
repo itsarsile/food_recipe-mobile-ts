@@ -2,7 +2,7 @@ import { CustomTextInput } from "@/components/Themed";
 import { useAuth } from "@/components/context/AuthContext";
 import PopularForYou from "@/components/home/PopularForYou";
 import { useGetRecipesQuery } from "@/src/features/recipes/recipesApiSlice";
-import { Link, Stack } from "expo-router";
+import { Link, Stack, useFocusEffect } from "expo-router";
 import React from "react";
 import ContentLoader, { Rect } from "react-content-loader/native";
 import { Image, ScrollView, StyleSheet, View } from "react-native";
@@ -51,18 +51,18 @@ export default function Home() {
   );
 }
 
-interface Recipe {
-  id: number;
-  title: string;
-  photo: string;
-  description: string;
-  // authorId: number;
-}
 
 function CarouselCard({ withDescription }: any) {
   const { data, isLoading, refetch } = useGetRecipesQuery();
+  useFocusEffect(
+    React.useCallback(() => {
+      refetch()
+    }, [refetch])
+  )
+
 
   if (isLoading)
+
     return (
       <ContentLoader
         speed={2}
@@ -78,6 +78,7 @@ function CarouselCard({ withDescription }: any) {
         <Rect x="97" y="145" rx="3" ry="3" width="85" height="6" />
       </ContentLoader>
     );
+
 
   return (
     <View>

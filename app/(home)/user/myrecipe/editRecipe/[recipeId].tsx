@@ -5,6 +5,7 @@ import { Formik } from "formik";
 import { ScrollView } from "react-native";
 import { CustomTextInput } from "@/components/Themed";
 import {
+  useDeleteRecipeMutation,
   useGetRecipesByIdQuery,
   useUpdateRecipeMutation,
 } from "@/src/features/recipes/recipesApiSlice";
@@ -15,8 +16,19 @@ export default function EditRecipePage() {
   const { recipeId } = useLocalSearchParams();
   const [updateRecipe, { isLoading: Updating }] = useUpdateRecipeMutation();
   const { data, isLoading, refetch } = useGetRecipesByIdQuery(Number(recipeId));
+  const [deleteRecipe, {isLoading: isDeleting}] = useDeleteRecipeMutation()
   if (isLoading) console.log("Loading data...");
   const recipe = data?.recipe[0];
+
+
+  const handleDelete = async (recipeId: number) => {
+    try {
+      const response = await deleteRecipe(recipeId)
+      console.log("🚀 ~ file: [recipeId].tsx:27 ~ handleDelete ~ response:", response)
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   const handleSubmit = async (values: any) => {
     try {
@@ -46,6 +58,7 @@ export default function EditRecipePage() {
             title: recipe?.title,
             description: recipe?.description,
             photo: recipe?.photo,
+            video: recipe?.video
           }}
         >
           {({ handleChange, handleBlur, submitForm, values }) => (
@@ -80,8 +93,20 @@ export default function EditRecipePage() {
                 value={values.photo}
                 className="mb-3"
               />
-              <Button mode="contained" className="mt-5" onPress={submitForm}>
+              <CustomTextInput
+                mode="outlined"
+                label="Video"
+                placeholder="Masukkan video..."
+                onChangeText={handleChange("video")}
+                onBlur={handleBlur("video")}
+                value={values.video}
+                className="mb-3"
+              />
+              <Button mode="contained" className="mt-5" onPress={submitForm} loading={Updating ? true : false}>
                 Update
+              </Button>
+              <Button mode="contained" style={{backgroundColor: "red", marginTop: 10}} onPress={() => handleDelete(Number(recipeId))} loading={isDeleting ? true : false}>
+                Delete
               </Button>
             </ScrollView>
           )}
