@@ -57,10 +57,10 @@ export const recipesApiSlice = apiSlice.injectEndpoints({
       }),
     }),
     updateRecipe: builder.mutation({
-      query: ({ id, title, description, photo }) => ({
+      query: ({ id, title, description, photo, video }) => ({
         url: `/recipes/${id}`,
         method: "PUT",
-        body: { title, description, photo },
+        body: { title, description, photo, video },
       }),
     }),
     deleteRecipe: builder.mutation({

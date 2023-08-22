@@ -4,7 +4,7 @@ import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { Divider, List } from "react-native-paper";
 export default function Modal() {
-  const isPresented = router.canGoBack();
+  const isPresented = router.canGoBack(); 
   return (
     <View>
       {!isPresented && <Link href="../">Dismiss</Link>}

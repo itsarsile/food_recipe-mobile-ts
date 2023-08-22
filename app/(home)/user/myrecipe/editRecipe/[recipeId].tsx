@@ -1,4 +1,4 @@
-import { StyleSheet, Text, ToastAndroid, View } from "react-native";
+import { Alert, StyleSheet, Text, ToastAndroid, View } from "react-native";
 import React, { useEffect } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Formik } from "formik";
@@ -16,19 +16,23 @@ export default function EditRecipePage() {
   const { recipeId } = useLocalSearchParams();
   const [updateRecipe, { isLoading: Updating }] = useUpdateRecipeMutation();
   const { data, isLoading, refetch } = useGetRecipesByIdQuery(Number(recipeId));
-  const [deleteRecipe, {isLoading: isDeleting}] = useDeleteRecipeMutation()
+  const [deleteRecipe, { isLoading: isDeleting }] = useDeleteRecipeMutation();
   if (isLoading) console.log("Loading data...");
   const recipe = data?.recipe[0];
 
-
   const handleDelete = async (recipeId: number) => {
     try {
-      const response = await deleteRecipe(recipeId)
-      console.log("🚀 ~ file: [recipeId].tsx:27 ~ handleDelete ~ response:", response)
+      const response = await deleteRecipe(recipeId);
+      console.log(
+        "🚀 ~ file: [recipeId].tsx:27 ~ handleDelete ~ response:",
+        response
+      );
+      ToastAndroid.show("Recipe deleted successfully", ToastAndroid.SHORT);
+      router.push("../");
     } catch (error) {
       console.error(error);
     }
-  }
+  };
 
   const handleSubmit = async (values: any) => {
     try {
@@ -37,6 +41,7 @@ export default function EditRecipePage() {
         title: values.title,
         description: values.description,
         photo: values.photo,
+        video: values.video,
       });
       console.log(
         "🚀 ~ file: [recipeId].tsx:30 ~ handleSubmit ~ response:",
@@ -58,7 +63,7 @@ export default function EditRecipePage() {
             title: recipe?.title,
             description: recipe?.description,
             photo: recipe?.photo,
-            video: recipe?.video
+            video: recipe?.video,
           }}
         >
           {({ handleChange, handleBlur, submitForm, values }) => (
@@ -102,10 +107,37 @@ export default function EditRecipePage() {
                 value={values.video}
                 className="mb-3"
               />
-              <Button mode="contained" className="mt-5" onPress={submitForm} loading={Updating ? true : false}>
+              <Button
+                mode="contained"
+                className="mt-5"
+                onPress={submitForm}
+                loading={Updating ? true : false}
+              >
                 Update
               </Button>
-              <Button mode="contained" style={{backgroundColor: "red", marginTop: 10}} onPress={() => handleDelete(Number(recipeId))} loading={isDeleting ? true : false}>
+              <Button
+                mode="contained"
+                style={{ backgroundColor: "red", marginTop: 10 }}
+                onPress={() =>
+                  Alert.alert(
+                    "Confirm Delete",
+                    "Are you sure you want to delete this recipe?",
+                    [
+                      {
+                        text: "Cancel",
+                        style: "cancel",
+                      },
+                      {
+                        text: "Delete",
+                        style: "destructive",
+                        onPress: () => handleDelete(Number(recipeId)),
+                      },
+                    ],
+                    { cancelable: true }
+                  )
+                }
+                loading={isDeleting ? true : false}
+              >
                 Delete
               </Button>
             </ScrollView>

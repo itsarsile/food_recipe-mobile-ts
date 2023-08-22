@@ -1,32 +1,74 @@
-import { useGetRecipesByIdQuery } from "@/src/features/recipes/recipesApiSlice";
-import { Feather } from "@expo/vector-icons";
-import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import { Image } from "expo-image";
-import { Link, Stack, useLocalSearchParams } from "expo-router";
-import React, { useState } from "react";
-import { KeyboardAvoidingView, Pressable } from "react-native";
-import { StyleSheet, Text, View, ScrollView } from "react-native";
-import { Avatar, Button, Card, Title, useTheme } from "react-native-paper";
-import * as WebBrowser from "expo-web-browser";
+import { CustomTextInput } from "@/components/Themed";
+import { selectCurrentUser } from "@/src/features/auth/authSlice";
 import {
   useCreateCommentMutation,
   useGetCommentQuery,
 } from "@/src/features/comments/commentsApiSlice";
-import { CustomTextInput } from "@/components/Themed";
+import { useLikeRecipeMutation } from "@/src/features/like/likeApiSlice";
+import { useGetRecipesByIdQuery } from "@/src/features/recipes/recipesApiSlice";
+import { useSaveRecipeMutation } from "@/src/features/save/saveApiSlice";
+import { Feather } from "@expo/vector-icons";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import { Image } from "expo-image";
+import { Link, useFocusEffect, useLocalSearchParams } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
 import { Formik } from "formik";
+import React from "react";
+import { Pressable, ScrollView, StyleSheet, Text, ToastAndroid, View } from "react-native";
+import {
+  Avatar,
+  Button,
+  Card,
+  IconButton,
+  Title,
+  useTheme,
+} from "react-native-paper";
 import { useSelector } from "react-redux";
-import { selectCurrentUser } from "@/src/features/auth/authSlice";
 
 const Tab = createMaterialTopTabNavigator();
 export default function RecipeDetail() {
   const theme = useTheme();
   const user = useSelector(selectCurrentUser);
-  console.log("🚀 ~ file: [recipeId].tsx:24 ~ user:", user);
   const { recipeId } = useLocalSearchParams();
-  const { data, isLoading } = useGetRecipesByIdQuery(Number(recipeId));
-  console.log("🚀 ~ file: [recipeId].tsx:23 ~ data:", data);
+  const { data, isLoading, refetch } = useGetRecipesByIdQuery(Number(recipeId));
   const { data: comments, isLoading: loadingComments } = useGetCommentQuery(
     Number(recipeId)
+    );
+    
+    const [saveRecipe] = useSaveRecipeMutation()
+    const [likeRecipe] = useLikeRecipeMutation()
+  const handleSave = async () => {
+    try {
+      const response = await saveRecipe({
+        recipeId: recipeId,
+        userId: user?.id
+      })
+      ToastAndroid.show("Recipe saved", ToastAndroid.SHORT)
+      
+    } catch (error) {
+      ToastAndroid.show("Error saving recipe", ToastAndroid.SHORT)
+      console.error(error)
+    }
+  }
+  const handleLike = async () => {
+    try {
+      const response = await likeRecipe({
+        recipeId: recipeId,
+        userId: user?.id
+      })
+      ToastAndroid.show("Recipe liked", ToastAndroid.SHORT)
+      
+    } catch (error) {
+      ToastAndroid.show("Error liking recipe", ToastAndroid.SHORT)
+      console.error(error)
+    }
+  }
+
+
+  useFocusEffect(
+    React.useCallback(() => {
+      refetch();
+    }, [refetch])
   );
   if (loadingComments) console.log("Loading comments...");
   if (isLoading)
@@ -37,10 +79,8 @@ export default function RecipeDetail() {
 
   const recipe = data?.recipe[0];
   const commentsData = comments?.comments;
-  console.log(recipe?.video);
   const blurHash =
     "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
-  // @ts-ignore
   return (
     <ScrollView className="">
       <View className="w-full h-1/2 items-center justify-center relative">
@@ -49,7 +89,11 @@ export default function RecipeDetail() {
             <Feather name="chevron-left" size={36} color="white" />
           </Link>
         </Pressable>
-        <Title className="absolute z-10 text-white text-4xl font-bold left-5 bottom-5">
+        <View style={{ position: "absolute", zIndex: 10, bottom: 60, left: 5, flexDirection: "row" }}>
+          <IconButton icon="bookmark-outline" iconColor="white" size={24} style={{backgroundColor: theme.colors.primary}} onPress={handleSave}/>
+          <IconButton icon="thumb-up-outline" iconColor="white" size={24}  style={{backgroundColor: theme.colors.primary}} onPress={handleLike}/>
+        </View>
+        <Title className="absolute z-10 text-white text-3xl font-bold left-5 bottom-5">
           {recipe?.title}
         </Title>
         <Image
@@ -158,7 +202,7 @@ const VideoStep = ({
           {comments &&
             comments.map((comment: any) => (
               <View
-              key={comment.id}
+                key={comment.id}
                 style={{
                   flexDirection: "row",
                   marginBottom: 10,

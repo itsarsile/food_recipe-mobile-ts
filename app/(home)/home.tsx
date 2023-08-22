@@ -1,18 +1,36 @@
 import { CustomTextInput } from "@/components/Themed";
-import { useAuth } from "@/components/context/AuthContext";
 import PopularForYou from "@/components/home/PopularForYou";
 import { useGetRecipesQuery } from "@/src/features/recipes/recipesApiSlice";
-import { Link, Stack, useFocusEffect } from "expo-router";
+import { Link, useFocusEffect } from "expo-router";
 import React from "react";
 import ContentLoader, { Rect } from "react-content-loader/native";
-import { Image, ScrollView, StyleSheet, View } from "react-native";
-import { Button, Text, useTheme } from "react-native-paper";
+import { Image, RefreshControl, ScrollView, StyleSheet, View } from "react-native";
+import { Text, useTheme } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 export default function Home() {
-  //@ts-ignore
+  const [refreshing, setRefreshing] = React.useState(false);
+  const { refetch } = useGetRecipesQuery();
+
+  useFocusEffect(
+    React.useCallback(() => {
+      refetch()
+    }, [refetch])
+  )
+
+  const onRefresh = React.useCallback(() => {
+    try {
+      setRefreshing(true)
+      refetch()
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setRefreshing(false)
+    }
+  }, [refetch])
+
   return (
     <SafeAreaView>
-      <ScrollView>
+      <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
         <View style={styles.container}>
           <View className="w-11/12 mx-auto">
             <CustomTextInput
@@ -53,12 +71,7 @@ export default function Home() {
 
 
 function CarouselCard({ withDescription }: any) {
-  const { data, isLoading, refetch } = useGetRecipesQuery();
-  useFocusEffect(
-    React.useCallback(() => {
-      refetch()
-    }, [refetch])
-  )
+  const { data, isLoading } = useGetRecipesQuery();
 
 
   if (isLoading)
