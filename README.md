@@ -2,18 +2,16 @@
 
 <!-- PROJECT LOGO -->
 <br />
-<div align="center">
-
-  <h3 align="center">Food Recipe Sharing App - React Native</h3>
-
+<p align="center">
+  <div align="center">
+    <img height="150" src="https://i.postimg.cc/rwvBhjwr/logo.png" alt="Recipe List" border="0"/>
+  </div>
+  <h3 align="center">Recipe List</h3>
   <p align="center">
-    
-    <a href="https://github.com/itsarsile/food_recipe-mobile-ts/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/itsarsile/food_recipe-mobile-ts/issues">Request Feature</a>
+    <a href="https://github.com/itsarsile/food_recipe-mobile-ts.git"><strong>Explore the docs »</strong></a>
+    <br />
   </p>
-</div>
-
+</p>
 <!-- TABLE OF CONTENTS -->
 
 ## Table of Contents
