@@ -66,8 +66,8 @@ This app was built with some technologies below:
 
 Before going to the installation stage there are some software that must be installed first.
 
-- [NodeJs](https://nodejs.org/en/download/)
-
+- [Node.js](https://nodejs.org/en/download/)
+- [Expo Go App](https://expo.dev/expo-go) for running the app without SDKs
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ### Installation
@@ -109,7 +109,7 @@ EXPO_PUBLIC_SUPABASE_URL=""
 ```
 
 ```
-NEXPO_PUBLIC_SUPABASE_KEY=""
+EXPO_PUBLIC_SUPABASE_KEY=""
 ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
