@@ -170,6 +170,6 @@ Contributions are what make the open source community such an amazing place to b
 5. Open a Pull Request
 
 <p align="right">(<a href="#top">back to top</a>)</p>
-## Related Project
 
+## Related Project
 :rocket: [`Backend FoodRecipe`](https://github.com/itsarsile/food_recipe_be.git)
